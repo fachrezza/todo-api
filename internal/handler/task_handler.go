@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"math"
 	"strconv"
-	
+
 	"github.com/fachrezza/todo-api/internal/dto"
 	"github.com/fachrezza/todo-api/internal/service"
 
@@ -94,4 +94,77 @@ func (h *TaskHandler) GetTasks(c *gin.Context) {
 			"total_tasks": total,
 		},
 	})
+}
+
+func (h *TaskHandler) GetTaskByID(c *gin.Context) {
+
+	id := c.Param("id")
+
+	task, err := h.service.GetByID(id)
+
+	if err != nil {
+
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Task not found",
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, task)
+
+}
+
+func (h *TaskHandler) UpdateTask(c *gin.Context) {
+
+	id := c.Param("id")
+
+	var req dto.UpdateTaskRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+
+		return
+	}
+
+	task, err := h.service.Update(id, req)
+
+	if err != nil {
+
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": err.Error(),
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Task updated successfully",
+		"task": task,
+	})
+
+}
+
+func (h *TaskHandler) DeleteTask(c *gin.Context) {
+
+	id := c.Param("id")
+
+	err := h.service.Delete(id)
+
+	if err != nil {
+
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Task not found",
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Task deleted successfully",
+	})
+
 }

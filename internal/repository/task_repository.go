@@ -75,3 +75,28 @@ func (r *TaskRepository) CountTasks(query dto.TaskQuery) (int64, error) {
 
 	return total, err
 }
+
+func (r *TaskRepository) GetByID(id string) (*model.Task, error) {
+
+	var task model.Task
+
+	err := config.DB.First(&task, "id = ?", id).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &task, nil
+}
+
+func (r *TaskRepository) Update(task *model.Task) error {
+
+	return config.DB.Save(task).Error
+
+}
+
+func (r *TaskRepository) Delete(task *model.Task) error {
+
+	return config.DB.Delete(task).Error
+
+}

@@ -85,3 +85,49 @@ func (s *TaskService) GetTasks(query dto.TaskQuery) ([]model.Task, int64, error)
 
 	return tasks, total, nil
 }
+
+func (s *TaskService) GetByID(id string) (*model.Task, error) {
+
+	return s.repo.GetByID(id)
+
+}
+
+func (s *TaskService) Update(id string, req dto.UpdateTaskRequest) (*model.Task, error) {
+
+	task, err := s.repo.GetByID(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	dueDate, err := time.Parse("2006-01-02", req.DueDate)
+
+	if err != nil {
+		return nil, err
+	}
+
+	task.Title = req.Title
+	task.Description = req.Description
+	task.Status = req.Status
+	task.DueDate = dueDate
+
+	err = s.repo.Update(task)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return task, nil
+}
+
+func (s *TaskService) Delete(id string) error {
+
+	task, err := s.repo.GetByID(id)
+
+	if err != nil {
+		return err
+	}
+
+	return s.repo.Delete(task)
+
+}
