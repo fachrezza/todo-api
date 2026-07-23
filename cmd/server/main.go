@@ -1,7 +1,8 @@
 package main
 
 import (
-	"todo-api/config"
+	"github.com/fachrezza/todo-api/config"
+	"github.com/fachrezza/todo-api/internal/routes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,11 +13,7 @@ func main() {
 
 	r := gin.Default()
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Todo API Running",
-		})
-	})
+	routes.SetupRoutes(r)
 
 	r.Run(":8080")
 }

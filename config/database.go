@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"github.com/fachrezza/todo-api/internal/model"
 )
 
 var DB *gorm.DB
@@ -37,6 +38,12 @@ func ConnectDB() {
 	}
 
 	DB = db
+	
+	err = DB.AutoMigrate(&model.Task{})
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	fmt.Println("Database Connected")
 }
