@@ -17,4 +17,5 @@ func SetupRoutes(r *gin.Engine) {
 	taskHandler := handler.NewTaskHandler(svc)
 
 	r.POST("/tasks", taskHandler.CreateTask)
+	r.GET("/tasks", taskHandler.GetTasks)
 }

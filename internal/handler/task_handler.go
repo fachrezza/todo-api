@@ -2,7 +2,9 @@ package handler
 
 import (
 	"net/http"
-
+	"math"
+	"strconv"
+	
 	"github.com/fachrezza/todo-api/internal/dto"
 	"github.com/fachrezza/todo-api/internal/service"
 
@@ -46,5 +48,50 @@ func (h *TaskHandler) CreateTask(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Task created successfully",
 		"task":    task,
+	})
+}
+
+func (h *TaskHandler) GetTasks(c *gin.Context) {
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+	query := dto.TaskQuery{
+
+		Page: page,
+
+		Limit: limit,
+
+		Status: c.Query("status"),
+
+		Search: c.Query("search"),
+	}
+
+	tasks, total, err := h.service.GetTasks(query)
+
+	if err != nil {
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+
+		return
+	}
+
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+
+	c.JSON(http.StatusOK, gin.H{
+
+		"tasks": tasks,
+
+		"pagination": gin.H{
+
+			"current_page": page,
+
+			"total_pages": totalPages,
+
+			"total_tasks": total,
+		},
 	})
 }
